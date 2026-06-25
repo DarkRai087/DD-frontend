@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d0d1a;
+  --background: #08080c;
+  --surface: #0f0f14;
+  --surface-raised: #15151c;
   --foreground: #ffffff;
+  --muted: rgba(255, 255, 255, 0.4);
+  --f1-red: #e10600;
 }
 
 @theme inline {
@@ -12,9 +16,102 @@
   --font-mono: var(--font-geist-mono);
 }
 
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Timing tower row treatment - the signature F1 element */
+.timing-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 150ms ease;
+}
+
+.timing-row:hover {
+  background: var(--surface-raised);
+}
+
+.timing-row .team-bar {
+  width: 3px;
+  height: 2rem;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.timing-row .position {
+  font-size: 0.875rem;
+  font-weight: 800;
+  width: 1.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.timing-row .driver-code {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.timing-row .gap {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+/* Condensed heading style - evokes F1 broadcast typography */
+.heading-condensed {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* Subtle pit garage ambient texture */
+.surface-textured {
+  background-image: 
+    linear-gradient(var(--surface) 1px, transparent 1px),
+    linear-gradient(90deg, var(--surface) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: -1px -1px;
+}
+
+/* Live pulse with F1 red */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-indicator {
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+/* Selection highlight in team color */
+::selection {
+  background: var(--f1-red);
+  color: white;
+}
+
+/* Scrollbar styling for the pit wall monitor feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }

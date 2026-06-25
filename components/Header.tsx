@@ -30,34 +30,41 @@ function toLabel(name: string) {
 }
 
 function toIST(date: Date): string {
-  const time = date.toLocaleTimeString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  return `${time} IST`;
+  const hours = date.getUTCHours() + 5;
+  const minutes = date.getUTCMinutes() + 30;
+  
+  let totalMinutes = hours * 60 + minutes;
+  const finalHours = Math.floor(totalMinutes / 60) % 24;
+  const finalMinutes = totalMinutes % 60;
+  
+  return `${finalHours.toString().padStart(2, "0")}:${finalMinutes.toString().padStart(2, "0")} IST`;
 }
 
 function toDateIST(date: Date): string {
+  const hours = date.getUTCHours() + 5;
+  const minutes = date.getUTCMinutes() + 30;
+  let totalMinutes = hours * 60 + minutes;
+  const dayOffset = Math.floor(totalMinutes / (24 * 60));
+  
+  const istDate = new Date(date.getTime());
+  istDate.setMinutes(istDate.getMinutes() + 330); // 5h 30m
+  
   const today = new Date();
-  const sessionDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-  const todayIST = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  const todayIST = new Date(today.getTime() + (today.getTimezoneOffset() + 330) * 60000);
 
   const sameDay =
-    sessionDate.getFullYear() === todayIST.getFullYear() &&
-    sessionDate.getMonth() === todayIST.getMonth() &&
-    sessionDate.getDate() === todayIST.getDate();
+    istDate.getUTCDate() === todayIST.getUTCDate() &&
+    istDate.getUTCMonth() === todayIST.getUTCMonth() &&
+    istDate.getUTCFullYear() === todayIST.getUTCFullYear();
 
   if (sameDay) return toIST(date);
 
-  const dayLabel = date.toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "numeric",
-    month: "short",
-  });
-  return `${dayLabel} · ${toIST(date)}`;
+  const day = istDate.getUTCDate();
+  const month = MONTHS[istDate.getUTCMonth()];
+  return `${day} ${month} · ${toIST(date)}`;
 }
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function useNextSession() {
   const [session, setSession] = useState<SessionInfo | null>(null);
@@ -101,7 +108,7 @@ export default function Header({ onToggleSidebar }: Props) {
   const isRace = session?.label === "RACE" || session?.label === "SPRINT";
 
   return (
-    <header className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06] bg-[#0d0d1a]/90 backdrop-blur-md shrink-0 z-10">
+    <header className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04] bg-[#08080c]/95 backdrop-blur-md shrink-0 z-10">
       {/* Sidebar toggle */}
       <button
         onClick={onToggleSidebar}

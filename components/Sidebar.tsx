@@ -64,9 +64,9 @@ export default function Sidebar({ open, onClose, onMouseLeave }: Props) {
       <aside
         className={[
           "fixed top-0 left-0 h-full w-60 z-30 flex flex-col",
-          "bg-[#12122a] border-r border-white/5",
+          "bg-[#0c0c12] border-r border-white/[0.04]",
           "transition-transform duration-250 ease-in-out",
-          open ? "translate-x-0 shadow-2xl shadow-black/60" : "-translate-x-full",
+          open ? "translate-x-0 shadow-2xl shadow-black/80" : "-translate-x-full",
         ].join(" ")}
         onMouseLeave={onMouseLeave}
       >

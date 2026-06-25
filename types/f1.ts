@@ -123,4 +123,116 @@ export interface NewsResponse {
   page: number;
   pageSize: number;
   articles: NewsArticle[];
+  lastUpdated: number;
+  fromCache: boolean;
+  nextUpdate: string;
+  dateRange?: {
+    from: string;
+    to: string;
+  };
+}
+
+// ── Race Details ────────────────────────────────────────────────────────────
+
+export interface RaceResultDriver {
+  id: string;
+  code: string | null;
+  firstName: string;
+  lastName: string;
+  nationality: string;
+  dateOfBirth?: string;
+}
+
+export interface RaceResultConstructor {
+  id: string;
+  name: string;
+  nationality?: string;
+}
+
+export interface FastestLap {
+  rank: number;
+  lap: number;
+  time: string | null;
+  speed: {
+    value: string;
+    units: string;
+  } | null;
+}
+
+export interface RaceResult {
+  position: number;
+  positionText: string;
+  number: number;
+  driver: RaceResultDriver;
+  constructor: RaceResultConstructor;
+  grid: number;
+  laps: number;
+  status: string;
+  time: string | null;
+  millis: number | null;
+  points: number;
+  fastestLap: FastestLap | null;
+}
+
+export interface QualifyingResult {
+  position: number;
+  number: number;
+  driver: {
+    id: string;
+    code: string | null;
+    firstName: string;
+    lastName: string;
+  };
+  constructor: {
+    id: string;
+    name: string;
+  };
+  q1: string | null;
+  q2: string | null;
+  q3: string | null;
+}
+
+export interface SessionResultRow {
+  position: number;
+  positionText: string;
+  number: number;
+  driver: {
+    code: string | null;
+    firstName: string;
+    lastName: string;
+  };
+  constructor: {
+    name: string;
+    color: string | null;
+  };
+  time: string | null;
+  laps: number | null;
+  status: string | null;
+  isClassified: boolean;
+  points: number | null;
+  grid: number | null;
+  components: Record<string, { key: string; name: string; position: number; time: string }>;
+}
+
+export interface SessionData {
+  code: string;
+  title: string;
+  results: SessionResultRow[];
+}
+
+export interface RaceDetailsResponse {
+  season: string;
+  round: number;
+  raceName: string;
+  date: string;
+  time: string | null;
+  url: string;
+  circuit: Circuit;
+  totalLaps: number;
+  isSprintWeekend: boolean;
+  availableSessions: string[];
+  raceResults: RaceResult[];
+  qualifyingResults: QualifyingResult[];
+  sprintResults: RaceResult[];
+  sessions: Record<string, SessionData>;
 }

@@ -18,31 +18,36 @@ export default async function DriversPage() {
     <div className="px-5 py-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-black tracking-tight">
-          <span className="text-[#e10600]">{year}</span> Drivers
-        </h1>
-        <p className="text-white/30 text-xs mt-0.5">
-          Current grid from OpenF1 live data
+        <div className="flex items-baseline gap-3">
+          <span className="text-[#e10600] text-3xl font-black tabular-nums tracking-tight">
+            {year}
+          </span>
+          <h1 className="text-xl font-bold text-white/90 tracking-tight uppercase">
+            Drivers
+          </h1>
+        </div>
+        <p className="text-white/20 text-[11px] font-mono mt-1">
+          Current grid from OpenF1
         </p>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5 mb-6">
-          <p className="text-red-400 font-semibold text-sm">
+        <div className="rounded-lg border border-[#e10600]/20 bg-[#e10600]/5 p-5 mb-6">
+          <p className="text-[#e10600] font-semibold text-sm">
             Could not reach the backend API
           </p>
-          <p className="text-red-400/60 text-xs mt-1">{error}</p>
+          <p className="text-white/30 text-xs mt-1 font-mono">{error}</p>
         </div>
       )}
 
       {/* Grid */}
       {drivers.length > 0 ? (
         <>
-          <p className="text-white/25 text-xs font-mono mb-4">
-            {drivers.length} drivers
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="flex items-center gap-4 text-[10px] font-mono text-white/20 mb-4 uppercase tracking-wider">
+            <span>{drivers.length} drivers</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {drivers.map((driver) => (
               <DriverCard key={driver.driver_number} driver={driver} />
             ))}

@@ -78,15 +78,15 @@ function ToggleGroup({
   options: { value: string; label: string }[];
 }) {
   return (
-    <div className="flex items-center bg-white/5 rounded-xl p-1 gap-1">
+    <div className="flex items-center bg-[#0c0c10] rounded-lg p-0.5 gap-0.5 border border-white/[0.04]">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+          className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wide transition-all duration-200 ${
             value === opt.value
-              ? "bg-[#e10600] text-white shadow"
-              : "text-white/40 hover:text-white/70"
+              ? "bg-[#e10600] text-white"
+              : "text-white/35 hover:text-white/60"
           }`}
         >
           {opt.label}
@@ -185,16 +185,21 @@ export default function StandingsClient({
       {/* Page header + controls */}
       <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-black tracking-tight">
-            <span className="text-[#e10600]">{year}</span> Standings
-          </h1>
-          <p className="text-white/30 text-xs mt-0.5">
-            {tab === "drivers" ? "Driver" : "Constructor"} Championship · After round{" "}
+          <div className="flex items-baseline gap-3">
+            <span className="text-[#e10600] text-3xl font-black tabular-nums tracking-tight">
+              {year}
+            </span>
+            <h1 className="text-xl font-bold text-white/90 tracking-tight uppercase">
+              Standings
+            </h1>
+          </div>
+          <p className="text-white/20 text-[11px] font-mono mt-1">
+            {tab === "drivers" ? "Drivers" : "Constructors"} · Round{" "}
             {tab === "drivers" ? (driverData?.round ?? "—") : (constructorData?.round ?? "—")}
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <ToggleGroup
             value={tab}
             onChange={(v) => setTab(v as Tab)}
@@ -205,16 +210,16 @@ export default function StandingsClient({
           />
           <button
             onClick={() => setShowGap((g) => !g)}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-sm font-semibold border transition-all duration-200 ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all duration-200 ${
               showGap
-                ? "bg-[#e10600]/15 border-[#e10600]/40 text-[#e10600]"
-                : "bg-white/5 border-white/10 text-white/40 hover:text-white/70"
+                ? "bg-[#e10600]/10 border-[#e10600]/30 text-[#e10600]"
+                : "bg-white/[0.03] border-white/[0.06] text-white/35 hover:text-white/60"
             }`}
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
             </svg>
-            Gap to P1
+            Gap
           </button>
         </div>
       </div>
@@ -395,11 +400,10 @@ export default function StandingsClient({
 
 function ErrorState({ message }: { message: string }) {
   return (
-    <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5">
-      <p className="text-red-400 font-semibold text-sm">{message}</p>
-      <p className="text-white/30 text-xs mt-2">
-        Make sure the backend is running on{" "}
-        <code className="font-mono bg-white/5 px-1 rounded">http://localhost:5000</code>
+    <div className="rounded-lg border border-[#e10600]/20 bg-[#e10600]/5 p-5">
+      <p className="text-[#e10600] font-semibold text-sm">{message}</p>
+      <p className="text-white/30 text-xs mt-2 font-mono">
+        Backend must be running on localhost:5000
       </p>
     </div>
   );

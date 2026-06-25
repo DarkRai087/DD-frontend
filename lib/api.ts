@@ -6,6 +6,7 @@ import {
   ConstructorStanding,
   StandingsResponse,
   NewsResponse,
+  RaceDetailsResponse,
 } from "@/types/f1";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
@@ -54,6 +55,13 @@ export async function getRaceSchedule(year: number): Promise<RaceScheduleRespons
 
 export async function getRaceWinners(year: number): Promise<WinnersResponse> {
   return apiFetch<WinnersResponse>(`/races/${year}/winners`, 300);
+}
+
+export async function getRaceDetails(
+  year: number,
+  round: number
+): Promise<RaceDetailsResponse> {
+  return apiFetch<RaceDetailsResponse>(`/races/${year}/${round}/details`, 300);
 }
 
 // ── Standings ─────────────────────────────────────────────────────────────────

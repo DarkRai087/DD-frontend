@@ -8,7 +8,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#0d0d1a] text-white overflow-hidden">
+    <div className="flex h-screen bg-[#08080c] text-white overflow-hidden">
       {/* Hover trigger strip — always visible on left edge, opens sidebar on mouse enter */}
       <div
         className="fixed top-0 left-0 h-full w-2 z-40 cursor-pointer"

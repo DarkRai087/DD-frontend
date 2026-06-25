@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Race, PodiumFinisher } from "@/types/f1";
 
 interface Props {
@@ -76,10 +77,12 @@ function formatDateRange(dateStr: string): string {
   
   const dayFri = fri.getDate().toString().padStart(2, "0");
   const daySun = raceDay.getDate().toString().padStart(2, "0");
-  const month = raceDay.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+  const month = MONTHS[raceDay.getMonth()].toUpperCase();
   
   return `${dayFri} - ${daySun} ${month}`;
 }
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function getCircuitPath(circuitId: string): string {
   const key = circuitId.toLowerCase().replace(/[^a-z0-9]/g, "_");
@@ -135,42 +138,45 @@ function PodiumDriver({
   const headshotUrl = getHeadshotUrl(code);
   
   return (
-    <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2 py-1.5 min-w-0">
+    <div className="flex items-center gap-2.5 bg-[#0c0c12] px-2 py-1.5 min-w-0">
+      {/* Team color bar - the signature F1 timing element */}
       <div 
-        className="flex items-center justify-center w-5 h-5 rounded text-[10px] font-black shrink-0"
-        style={{ 
-          backgroundColor: POSITION_COLORS[position - 1] + "20",
-          color: POSITION_COLORS[position - 1],
-        }}
+        className="w-[3px] h-7 rounded-[1px] shrink-0"
+        style={{ backgroundColor: teamColor }}
+      />
+      
+      {/* Position */}
+      <span 
+        className="text-sm font-black w-4 text-right tabular-nums shrink-0"
+        style={{ color: position === 1 ? "#fff" : "rgba(255,255,255,0.6)" }}
       >
         {position}
-      </div>
+      </span>
       
+      {/* Driver headshot */}
       <div 
-        className="relative w-7 h-7 rounded-full overflow-hidden shrink-0 border-2"
-        style={{ borderColor: teamColor }}
+        className="relative w-6 h-6 rounded-full overflow-hidden shrink-0"
       >
         <Image
           src={headshotUrl}
           alt={code}
           fill
-          className="object-cover object-top scale-[1.3]"
-          sizes="28px"
+          className="object-cover object-top scale-[1.4]"
+          sizes="24px"
         />
       </div>
       
-      <div className="min-w-0 flex-1">
+      {/* Driver code + gap */}
+      <div className="min-w-0 flex-1 flex items-center justify-between gap-2">
         <span 
-          className="text-xs font-bold block"
+          className="text-[11px] font-bold tracking-wide"
           style={{ color: teamColor }}
         >
           {code}
         </span>
-        {finisher.time && (
-          <span className="text-[9px] text-white/40 block truncate">
-            {position === 1 ? finisher.time : `+${finisher.time}`}
-          </span>
-        )}
+        <span className="text-[10px] font-mono text-white/35 tabular-nums truncate">
+          {position === 1 ? (finisher.time ?? "") : finisher.time ? `+${finisher.time}` : ""}
+        </span>
       </div>
     </div>
   );
@@ -182,14 +188,14 @@ function CircuitSilhouette({ circuitId }: { circuitId: string }) {
   return (
     <svg 
       viewBox="0 0 100 100" 
-      className="w-full h-20 opacity-20"
+      className="w-full h-full opacity-15"
       preserveAspectRatio="xMidYMid meet"
     >
       <path
         d={path}
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         className="text-white"
@@ -198,7 +204,7 @@ function CircuitSilhouette({ circuitId }: { circuitId: string }) {
   );
 }
 
-export default function RaceCard({ race, podium, season: _season }: Props) {
+export default function RaceCard({ race, podium, season }: Props) {
   const status = getRaceStatus(race.date);
   const flag = getFlag(race.circuit.country);
   const hasPodium = !!podium && podium.length > 0;
@@ -206,49 +212,49 @@ export default function RaceCard({ race, podium, season: _season }: Props) {
   const isUpcoming = status === "upcoming";
 
   return (
-    <div 
-      className={`
-        relative bg-[#15151e] rounded-xl overflow-hidden 
-        border transition-all duration-300 
-        hover:border-white/20 hover:-translate-y-1 hover:shadow-2xl
-        ${isLive ? "border-[#e10600]/50 shadow-[0_0_30px_rgba(225,6,0,0.15)]" : "border-white/5"}
-      `}
+    <Link 
+      href={`/race/${season}/${race.round}`}
+      className={`block relative bg-[#0f0f14] rounded-lg overflow-hidden border transition-all duration-200 cursor-pointer hover:bg-[#121218] hover:border-white/10 ${isLive ? "border-[#e10600]/40" : "border-white/[0.04]"}`}
     >
       {isLive && (
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#e10600]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#e10600]" />
       )}
 
       <div className="p-4">
-        <div className="flex items-start justify-between mb-3">
-          <span className="text-[10px] font-bold tracking-widest text-white/30 uppercase">
-            Round {race.round}
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] font-semibold tracking-widest text-white/25 uppercase">
+            R{race.round.toString().padStart(2, "0")}
           </span>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {isLive && (
-              <span className="flex items-center gap-1 text-[10px] font-bold text-[#e10600] uppercase">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#e10600] animate-pulse" />
+              <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#e10600] uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#e10600] live-indicator" />
                 Live
               </span>
             )}
-            <span className="text-[10px] font-mono text-white/40">
+            <span className="text-[10px] font-mono text-white/30 tabular-nums">
               {formatDateRange(race.date)}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-2xl leading-none">{flag}</span>
-          <h3 className="text-lg font-bold text-white leading-tight">
+        {/* Country + flag */}
+        <div className="flex items-center gap-2.5 mb-0.5">
+          <span className="text-xl leading-none">{flag}</span>
+          <h3 className="text-base font-black text-white tracking-tight leading-tight">
             {race.circuit.country === "UK" ? "Great Britain" : race.circuit.country}
           </h3>
         </div>
 
-        <p className="text-[10px] text-white/40 uppercase tracking-wider leading-tight mb-4 line-clamp-2">
-          {race.raceName}
+        {/* Circuit name */}
+        <p className="text-[10px] text-white/30 uppercase tracking-wide leading-tight mb-4 line-clamp-1 pl-8">
+          {race.circuit.name}
         </p>
 
+        {/* Podium results or circuit silhouette */}
         {hasPodium ? (
-          <div className="space-y-1.5">
+          <div className="rounded overflow-hidden border border-white/[0.04]">
             {podium!.slice(0, 3).map((finisher) => (
               <PodiumDriver 
                 key={finisher.position} 
@@ -258,11 +264,11 @@ export default function RaceCard({ race, podium, season: _season }: Props) {
             ))}
           </div>
         ) : (
-          <div className="relative">
+          <div className="relative h-20">
             <CircuitSilhouette circuitId={race.circuit.id} />
             <div className="absolute inset-0 flex items-center justify-center">
               {isUpcoming && (
-                <span className="text-xl font-bold text-white/20">
+                <span className="text-sm font-mono font-medium text-white/15 tabular-nums">
                   {formatDateRange(race.date)}
                 </span>
               )}
@@ -270,6 +276,6 @@ export default function RaceCard({ race, podium, season: _season }: Props) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
