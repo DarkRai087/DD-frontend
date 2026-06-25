@@ -1,8 +1,9 @@
 import { getDrivers, getCurrentYear } from "@/lib/api";
 import DriverCard from "@/components/DriverCard";
+import { Driver } from "@/types/f1";
 
 export default async function DriversPage() {
-  let drivers = [];
+  let drivers: Driver[] = [];
   let error: string | null = null;
 
   try {
