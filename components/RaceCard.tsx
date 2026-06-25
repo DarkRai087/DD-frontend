@@ -6,6 +6,7 @@ interface Props {
   season: number;
 }
 
+// ── Static maps ───────────────────────────────────────────────────────────────
 const COUNTRY_FLAGS: Record<string, string> = {
   Australia: "🇦🇺", China: "🇨🇳", Japan: "🇯🇵", USA: "🇺🇸", Canada: "🇨🇦",
   Monaco: "🇲🇨", Spain: "🇪🇸", Austria: "🇦🇹", UK: "🇬🇧", Belgium: "🇧🇪",
@@ -16,34 +17,28 @@ const COUNTRY_FLAGS: Record<string, string> = {
 };
 
 const TEAM_COLORS: Record<string, string> = {
-  mercedes: "#27F4D2",
-  ferrari: "#ED1131",
-  red_bull: "#3671C6",
-  mclaren: "#FF8000",
-  alpine: "#0093CC",
-  aston_martin: "#229971",
-  williams: "#1868DB",
-  rb: "#6692FF",
-  haas: "#9C9FA2",
-  sauber: "#01C00E",
-  audi: "#F50537",
-  cadillac: "#000000",
+  mercedes: "#27F4D2", ferrari: "#ED1131", red_bull: "#3671C6",
+  mclaren: "#FF8000", alpine: "#0093CC", aston_martin: "#229971",
+  williams: "#1868DB", rb: "#6692FF", haas: "#9C9FA2",
+  sauber: "#01C00E", kick_sauber: "#01C00E", alphatauri: "#6692FF",
   toro_rosso: "#6692FF",
-  alphatauri: "#6692FF",
 };
 
-const POSITION_LABELS: Record<number, string> = {
-  1: "1ST",
-  2: "2ND",
-  3: "3RD",
-};
-
-function getFlag(country: string): string {
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getFlag(country: string) {
   return COUNTRY_FLAGS[country] ?? "🏁";
 }
 
-function getTeamColor(constructorId: string): string {
-  return TEAM_COLORS[constructorId] ?? "#555555";
+function getTeamColor(id: string) {
+  const key = id.toLowerCase().replace(/[^a-z0-9]/g, "_");
+  return TEAM_COLORS[key] ?? "#666";
+}
+
+function driverCode(f: PodiumFinisher) {
+  return (
+    f.driver.code ??
+    `${f.driver.firstName[0]}${f.driver.lastName.slice(0, 2)}`.toUpperCase()
+  );
 }
 
 function getRaceStatus(dateStr: string): "upcoming" | "completed" | "today" {
@@ -56,101 +51,127 @@ function getRaceStatus(dateStr: string): "upcoming" | "completed" | "today" {
   return raceDate < today ? "completed" : "upcoming";
 }
 
-function formatWeekendRange(dateStr: string): string {
+function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
   const raceDay = new Date(y, m - 1, d);
   const fri = new Date(raceDay);
   fri.setDate(fri.getDate() - 2);
-
   const fmt = (dt: Date) =>
     dt.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }).toUpperCase();
-
   return `${fmt(fri)} – ${fmt(raceDay)}`;
 }
 
-function driverCode(finisher: PodiumFinisher): string {
-  return (
-    finisher.driver.code ??
-    `${finisher.driver.firstName[0]}${finisher.driver.lastName.slice(0, 2)}`.toUpperCase()
-  );
-}
+// ── Sub-components ────────────────────────────────────────────────────────────
+function PodiumResult({ podium }: { podium: PodiumFinisher[] }) {
+  const [p1, p2, p3] = podium;
+  if (!p1) return null;
 
-function PodiumSlot({ finisher }: { finisher: PodiumFinisher }) {
-  const color = getTeamColor(finisher.constructor.id);
-  const code = driverCode(finisher);
+  const winColor = getTeamColor(p1.constructor.id);
 
   return (
-    <div className="flex-1 flex items-center gap-2 bg-[#1c1c1c] rounded-xl px-3 py-3 min-w-0">
-      <span className="text-white/90 font-black text-xl italic tracking-tighter leading-none shrink-0 w-9">
-        {POSITION_LABELS[finisher.position]}
-      </span>
-
-      <div
-        className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center border-2"
-        style={{ backgroundColor: `${color}30`, borderColor: color }}
-      >
-        <span className="text-[10px] font-black text-white">{code}</span>
+    <div className="flex flex-col items-end gap-1">
+      {/* Winner */}
+      <div className="flex items-center gap-1.5">
+        <div
+          className="w-2 h-2 rounded-full shrink-0"
+          style={{ backgroundColor: winColor }}
+        />
+        <span className="text-sm font-bold text-white">{driverCode(p1)}</span>
       </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="text-white font-bold text-sm leading-none truncate">{code}</p>
-        <p className="text-white/50 text-[11px] font-mono mt-1 truncate">
-          {finisher.time ?? "—"}
-        </p>
-      </div>
+      {/* P2 & P3 */}
+      {(p2 || p3) && (
+        <div className="flex items-center gap-2.5">
+          {[p2, p3].filter(Boolean).map((f) => (
+            <div key={f!.position} className="flex items-center gap-1">
+              <div
+                className="w-1.5 h-1.5 rounded-full shrink-0"
+                style={{ backgroundColor: getTeamColor(f!.constructor.id) }}
+              />
+              <span className="text-[10px] font-semibold text-white/40">
+                {driverCode(f!)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-export default function RaceCard({ race, podium, season }: Props) {
+function StatusBadge({ status }: { status: "upcoming" | "completed" | "today" }) {
+  if (status === "today") {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full bg-[#e10600]/15 border border-[#e10600]/30 text-[#e10600]">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#e10600] animate-pulse" />
+        Race Day
+      </span>
+    );
+  }
+  if (status === "upcoming") {
+    return (
+      <span className="inline-flex text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/30">
+        Upcoming
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/20">
+      No data
+    </span>
+  );
+}
+
+// ── Main row ──────────────────────────────────────────────────────────────────
+export default function RaceCard({ race, podium, season: _season }: Props) {
   const status = getRaceStatus(race.date);
   const flag = getFlag(race.circuit.country);
-  const hasPodium = podium && podium.length > 0;
+  const hasPodium = !!podium && podium.length > 0;
 
   return (
-    <div className="bg-black rounded-2xl border border-white/8 overflow-hidden hover:border-white/15 transition-colors">
-      <div className="p-5">
-        {/* Top row */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-white/50 text-[11px] font-bold tracking-[0.2em] uppercase">
-            Round {race.round}
-          </span>
-          <span className="flex items-center gap-1.5 text-white/60 text-[11px] font-medium bg-white/5 border border-white/10 rounded-full px-2.5 py-1">
-            <span className="text-xs">🏁</span>
-            {formatWeekendRange(race.date)}
-          </span>
-        </div>
+    <tr className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors group">
+      {/* RND */}
+      <td className="py-4 pr-4 w-10 align-middle">
+        <span className="text-xs font-black font-mono text-white/25">
+          {String(race.round).padStart(2, "0")}
+        </span>
+      </td>
 
-        {/* Country + race name */}
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl leading-none">{flag}</span>
-          <h3 className="text-white text-2xl font-black tracking-tight">
-            {race.circuit.country}
-          </h3>
-        </div>
-        <p className="text-white/35 text-[10px] uppercase tracking-widest leading-relaxed mb-5">
-          Formula 1 {race.raceName} {season}
-        </p>
-
-        {/* Podium or status */}
-        {hasPodium ? (
-          <div className="flex gap-2">
-            {podium.map((f) => (
-              <PodiumSlot key={f.position} finisher={f} />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-[#1c1c1c] rounded-xl px-4 py-6 text-center">
-            <p className="text-white/25 text-sm">
-              {status === "upcoming"
-                ? "Race not yet held"
-                : status === "today"
-                ? "Race day — results pending"
-                : "Results unavailable"}
+      {/* GRAND PRIX */}
+      <td className="py-4 pr-6 align-middle">
+        <div className="flex items-center gap-3">
+          <span className="text-xl leading-none shrink-0">{flag}</span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-white leading-tight whitespace-nowrap">
+              {race.circuit.country}
+            </p>
+            <p className="text-[10px] text-white/30 uppercase tracking-widest truncate mt-0.5">
+              {race.raceName.replace(/Grand Prix/i, "GP")}
             </p>
           </div>
+        </div>
+      </td>
+
+      {/* CIRCUIT */}
+      <td className="py-4 pr-6 hidden md:table-cell align-middle min-w-[180px]">
+        <p className="text-sm text-white/55 truncate">{race.circuit.name}</p>
+        <p className="text-[10px] text-white/25 mt-0.5">
+          {race.circuit.locality}, {race.circuit.country}
+        </p>
+      </td>
+
+      {/* DATE */}
+      <td className="py-4 pr-6 hidden sm:table-cell align-middle whitespace-nowrap">
+        <span className="text-xs font-mono text-white/40">{formatDate(race.date)}</span>
+      </td>
+
+      {/* RESULT */}
+      <td className="py-4 align-middle text-right">
+        {hasPodium ? (
+          <PodiumResult podium={podium!} />
+        ) : (
+          <StatusBadge status={status} />
         )}
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }

@@ -83,3 +83,21 @@ export interface DriverStanding {
   };
   constructors: Array<{ id: string; name: string; nationality: string }>;
 }
+
+export interface ConstructorStanding {
+  position: number;
+  points: number;
+  wins: number;
+  constructor: {
+    id: string;
+    name: string;
+    nationality: string;
+    url: string;
+  };
+}
+
+export interface StandingsResponse<T> {
+  season: string;
+  round: number;
+  standings: T[];
+}

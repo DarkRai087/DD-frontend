@@ -22,7 +22,7 @@ async function RaceGrid({ year }: { year: number }) {
         <p className="text-white/30 text-xs mt-2">
           Make sure the backend is running on{" "}
           <code className="font-mono bg-white/5 px-1 rounded">
-            http://localhost:3000
+            http://localhost:5000
           </code>
         </p>
       </div>
@@ -52,15 +52,39 @@ async function RaceGrid({ year }: { year: number }) {
       <p className="text-white/25 text-xs font-mono mb-4">
         {scheduleRes.total} races · {winnerCount} completed
       </p>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {scheduleRes.races.map((race) => (
-          <RaceCard
-            key={race.round}
-            race={race}
-            podium={podiums[race.round]}
-            season={year}
-          />
-        ))}
+
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[480px] border-collapse">
+          <thead>
+            <tr className="border-b border-white/8">
+              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left w-10">
+                Rnd
+              </th>
+              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left">
+                Grand Prix
+              </th>
+              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left hidden md:table-cell">
+                Circuit
+              </th>
+              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left hidden sm:table-cell">
+                Date
+              </th>
+              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-right">
+                Result
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {scheduleRes.races.map((race) => (
+              <RaceCard
+                key={race.round}
+                race={race}
+                podium={podiums[race.round]}
+                season={year}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   );
@@ -97,13 +121,29 @@ export default async function HomePage({ searchParams }: Props) {
       {/* Race grid — streamed */}
       <Suspense
         fallback={
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-48 rounded-2xl bg-white/5 animate-pulse"
-              />
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px] border-collapse">
+              <thead>
+                <tr className="border-b border-white/8">
+                  {["Rnd", "Grand Prix", "Circuit", "Date", "Result"].map((h) => (
+                    <th key={h} className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <tr key={i} className="border-b border-white/[0.05]">
+                    {Array.from({ length: 5 }).map((__, j) => (
+                      <td key={j} className="py-4 pr-6">
+                        <div className="h-4 rounded-full bg-white/5 animate-pulse" style={{ width: j === 1 ? "120px" : j === 2 ? "160px" : "60px" }} />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         }
       >

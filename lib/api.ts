@@ -2,9 +2,12 @@ import {
   Driver,
   RaceScheduleResponse,
   WinnersResponse,
+  DriverStanding,
+  ConstructorStanding,
+  StandingsResponse,
 } from "@/types/f1";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -50,4 +53,24 @@ export async function getRaceSchedule(year: number): Promise<RaceScheduleRespons
 
 export async function getRaceWinners(year: number): Promise<WinnersResponse> {
   return apiFetch<WinnersResponse>(`/races/${year}/winners`, 300);
+}
+
+// ── Standings ─────────────────────────────────────────────────────────────────
+
+export async function getDriverStandings(
+  year: number
+): Promise<StandingsResponse<DriverStanding>> {
+  return apiFetch<StandingsResponse<DriverStanding>>(
+    `/standings/${year}/drivers`,
+    300
+  );
+}
+
+export async function getConstructorStandings(
+  year: number
+): Promise<StandingsResponse<ConstructorStanding>> {
+  return apiFetch<StandingsResponse<ConstructorStanding>>(
+    `/standings/${year}/constructors`,
+    300
+  );
 }
