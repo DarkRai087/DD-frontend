@@ -101,3 +101,26 @@ export interface StandingsResponse<T> {
   round: number;
   standings: T[];
 }
+
+// ── News ───────────────────────────────────────────────────────────────────────
+export interface NewsArticle {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string;
+  urlToImage: string | null;
+  publishedAt: string;
+  source: {
+    id: string | null;
+    name: string;
+  };
+  author: string | null;
+}
+
+export interface NewsResponse {
+  status: string;
+  totalResults: number;
+  page: number;
+  pageSize: number;
+  articles: NewsArticle[];
+}

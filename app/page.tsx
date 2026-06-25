@@ -53,40 +53,45 @@ async function RaceGrid({ year }: { year: number }) {
         {scheduleRes.total} races · {winnerCount} completed
       </p>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[480px] border-collapse">
-          <thead>
-            <tr className="border-b border-white/8">
-              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left w-10">
-                Rnd
-              </th>
-              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left">
-                Grand Prix
-              </th>
-              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left hidden md:table-cell">
-                Circuit
-              </th>
-              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left hidden sm:table-cell">
-                Date
-              </th>
-              <th className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-right">
-                Result
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {scheduleRes.races.map((race) => (
-              <RaceCard
-                key={race.round}
-                race={race}
-                podium={podiums[race.round]}
-                season={year}
-              />
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {scheduleRes.races.map((race) => (
+          <RaceCard
+            key={race.round}
+            race={race}
+            podium={podiums[race.round]}
+            season={year}
+          />
+        ))}
       </div>
     </>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div 
+          key={i} 
+          className="bg-[#15151e] rounded-xl border border-white/5 p-4 animate-pulse"
+        >
+          <div className="flex justify-between mb-3">
+            <div className="h-3 w-16 bg-white/10 rounded" />
+            <div className="h-3 w-20 bg-white/10 rounded" />
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-white/10 rounded-full" />
+            <div className="h-5 w-28 bg-white/10 rounded" />
+          </div>
+          <div className="h-3 w-full bg-white/5 rounded mb-4" />
+          <div className="space-y-2">
+            {[1, 2, 3].map((j) => (
+              <div key={j} className="h-10 bg-white/5 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -100,7 +105,6 @@ export default async function HomePage({ searchParams }: Props) {
 
   return (
     <div className="px-5 py-6">
-      {/* Page header */}
       <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
         <div>
           <h1 className="text-2xl font-black tracking-tight">
@@ -118,35 +122,7 @@ export default async function HomePage({ searchParams }: Props) {
         </Suspense>
       </div>
 
-      {/* Race grid — streamed */}
-      <Suspense
-        fallback={
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] border-collapse">
-              <thead>
-                <tr className="border-b border-white/8">
-                  {["Rnd", "Grand Prix", "Circuit", "Date", "Result"].map((h) => (
-                    <th key={h} className="py-3 text-[10px] font-bold tracking-widest text-white/25 uppercase text-left">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i} className="border-b border-white/[0.05]">
-                    {Array.from({ length: 5 }).map((__, j) => (
-                      <td key={j} className="py-4 pr-6">
-                        <div className="h-4 rounded-full bg-white/5 animate-pulse" style={{ width: j === 1 ? "120px" : j === 2 ? "160px" : "60px" }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        }
-      >
+      <Suspense fallback={<LoadingSkeleton />}>
         <RaceGrid year={year} />
       </Suspense>
     </div>

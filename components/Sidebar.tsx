@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 interface Props {
   open: boolean;
   onClose: () => void;
+  onMouseLeave: () => void;
 }
 
 const navLinks = [
@@ -36,30 +37,38 @@ const navLinks = [
       </svg>
     ),
   },
+  {
+    href: "/news",
+    label: "News",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+      </svg>
+    ),
+  },
 ];
 
-export default function Sidebar({ open, onClose }: Props) {
+export default function Sidebar({ open, onClose, onMouseLeave }: Props) {
   const pathname = usePathname();
 
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Backdrop — tap outside on mobile to close */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/60 z-20 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
-        className={`
-          fixed top-0 left-0 h-full z-30 flex flex-col
-          bg-[#12122a] border-r border-white/5
-          transition-all duration-300 ease-in-out
-          ${open ? "w-60" : "w-0 overflow-hidden"}
-          lg:relative lg:shrink-0
-          ${open ? "lg:w-60" : "lg:w-0 lg:overflow-hidden"}
-        `}
+        className={[
+          "fixed top-0 left-0 h-full w-60 z-30 flex flex-col",
+          "bg-[#12122a] border-r border-white/5",
+          "transition-transform duration-250 ease-in-out",
+          open ? "translate-x-0 shadow-2xl shadow-black/60" : "-translate-x-full",
+        ].join(" ")}
+        onMouseLeave={onMouseLeave}
       >
         {/* Brand */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5 shrink-0">
@@ -78,19 +87,14 @@ export default function Sidebar({ open, onClose }: Props) {
           </p>
           {navLinks.map((link) => {
             const active = pathname === link.href;
+            const linkClass = [
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap",
+              active
+                ? "bg-[#e10600]/15 text-[#e10600]"
+                : "text-white/50 hover:text-white hover:bg-white/5",
+            ].join(" ");
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                  transition-colors whitespace-nowrap
-                  ${active
-                    ? "bg-[#e10600]/15 text-[#e10600]"
-                    : "text-white/50 hover:text-white hover:bg-white/5"
-                  }
-                `}
-              >
+              <Link key={link.href} href={link.href} className={linkClass}>
                 {link.icon}
                 {link.label}
               </Link>

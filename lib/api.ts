@@ -5,6 +5,7 @@ import {
   DriverStanding,
   ConstructorStanding,
   StandingsResponse,
+  NewsResponse,
 } from "@/types/f1";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
@@ -71,6 +72,19 @@ export async function getConstructorStandings(
 ): Promise<StandingsResponse<ConstructorStanding>> {
   return apiFetch<StandingsResponse<ConstructorStanding>>(
     `/standings/${year}/constructors`,
+    300
+  );
+}
+
+// ── News ─────────────────────────────────────────────────────────────────────
+
+export async function getNews(
+  pageSize = 12,
+  page = 1,
+  sortBy: "publishedAt" | "relevancy" | "popularity" = "publishedAt"
+): Promise<NewsResponse> {
+  return apiFetch<NewsResponse>(
+    `/news?pageSize=${pageSize}&page=${page}&sortBy=${sortBy}`,
     300
   );
 }

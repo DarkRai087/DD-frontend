@@ -11,6 +11,30 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "media.formula1.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn-1.motorsport.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn-9.motorsport.com",
+      },
+      {
+        protocol: "https",
+        hostname: "s.yimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.dailymail.co.uk",
+      },
+      {
+        protocol: "https",
+        hostname: "static.toiimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
 };
