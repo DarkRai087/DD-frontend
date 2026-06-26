@@ -57,6 +57,16 @@ export async function getRaceWinners(year: number): Promise<WinnersResponse> {
   return apiFetch<WinnersResponse>(`/races/${year}/winners`, 300);
 }
 
+/**
+ * Combined endpoint: fetches schedule + winners in a single request.
+ * More efficient than calling getRaceSchedule + getRaceWinners separately.
+ */
+export async function getRaceCalendarFull(
+  year: number
+): Promise<RaceScheduleResponse & WinnersResponse> {
+  return apiFetch<RaceScheduleResponse & WinnersResponse>(`/races/${year}/full`, 300);
+}
+
 export async function getRaceDetails(
   year: number,
   round: number

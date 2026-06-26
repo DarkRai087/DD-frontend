@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getRaceSchedule, getRaceWinners, getCurrentYear } from "@/lib/api";
+import { getRaceCalendarFull, getCurrentYear } from "@/lib/api";
 import RaceCard from "@/components/RaceCard";
 import YearDropdown from "@/components/YearDropdown";
 
@@ -8,12 +8,10 @@ interface Props {
 }
 
 async function RaceGrid({ year }: { year: number }) {
-  const [scheduleRes, winnersRes] = await Promise.all([
-    getRaceSchedule(year).catch(() => null),
-    getRaceWinners(year).catch(() => null),
-  ]);
+  // Single API call instead of 2 parallel calls - reduces latency significantly
+  const data = await getRaceCalendarFull(year).catch(() => null);
 
-  if (!scheduleRes) {
+  if (!data) {
     return (
       <div className="rounded-lg border border-[#e10600]/20 bg-[#e10600]/5 p-5">
         <p className="text-[#e10600] font-semibold text-sm">
@@ -26,31 +24,19 @@ async function RaceGrid({ year }: { year: number }) {
     );
   }
 
-  const podiums = winnersRes?.podiums ?? {};
+  const podiums = data.podiums ?? {};
   const winnerCount = Object.keys(podiums).length;
-  const winnersFailed = !winnersRes && scheduleRes;
 
   return (
     <>
-      {winnersFailed && (
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 mb-4">
-          <p className="text-amber-400/90 text-sm font-semibold">
-            Race results unavailable
-          </p>
-          <p className="text-white/25 text-xs mt-1 font-mono">
-            Restart backend to load latest code
-          </p>
-        </div>
-      )}
-
       <div className="flex items-center gap-4 text-[10px] font-mono text-white/20 mb-4 uppercase tracking-wider">
-        <span>{scheduleRes.total} rounds</span>
+        <span>{data.total} rounds</span>
         <span className="w-px h-3 bg-white/10" />
         <span>{winnerCount} completed</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {scheduleRes.races.map((race) => (
+        {data.races.map((race) => (
           <RaceCard
             key={race.round}
             race={race}
