@@ -34,7 +34,7 @@ export default function NewsGrid({ initialData }: Props) {
       if (data.articles && data.articles.length > 0) {
         setArticles((prev) => [...prev, ...data.articles]);
         setPage(nextPage);
-        setHasMore(data.articles.length === 8); // Has more if we got full page
+        setHasMore(data.articles.length === 8);
       } else {
         setHasMore(false);
       }
@@ -78,61 +78,36 @@ export default function NewsGrid({ initialData }: Props) {
       />
 
       {featured && (
-        <div className="mb-6">
+        <div className="mb-6 animate-scale-in">
           <FeaturedNewsCard article={featured} />
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-children">
         {rest.map((article, index) => (
           <NewsCard key={`${article.url}-${index}`} article={article} />
         ))}
       </div>
 
       {hasMore && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-10 flex justify-center animate-fade-in">
           <button
             onClick={loadMore}
             disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#e10600] hover:bg-[#c10500] text-white text-xs font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
-                <svg
-                  className="w-4 h-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 Loading
               </>
             ) : (
               <>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
                 Load More
               </>
@@ -142,8 +117,8 @@ export default function NewsGrid({ initialData }: Props) {
       )}
 
       {!hasMore && articles.length > 0 && (
-        <div className="mt-8 text-center">
-          <p className="text-white/20 text-[10px] font-mono uppercase tracking-wider">
+        <div className="mt-10 text-center animate-fade-in">
+          <p className="text-label">
             {articles.length} articles loaded
           </p>
         </div>

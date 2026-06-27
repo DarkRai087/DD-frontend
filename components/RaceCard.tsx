@@ -43,51 +43,7 @@ const CIRCUIT_SVGS: Record<string, string> = {
   default: "M30 50 L45 20 L75 30 L80 55 L65 75 L35 70 Z",
 };
 
-function getFlag(country: string) {
-  return COUNTRY_FLAGS[country] ?? "🏁";
-}
-
-function getTeamColor(id: string) {
-  const key = id.toLowerCase().replace(/[^a-z0-9]/g, "_");
-  return TEAM_COLORS[key] ?? "#666";
-}
-
-function driverCode(f: PodiumFinisher) {
-  return (
-    f.driver.code ??
-    `${f.driver.firstName[0]}${f.driver.lastName.slice(0, 2)}`.toUpperCase()
-  );
-}
-
-function getRaceStatus(dateStr: string): "upcoming" | "completed" | "today" {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const raceDate = new Date(y, m - 1, d);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  raceDate.setHours(0, 0, 0, 0);
-  if (raceDate.getTime() === today.getTime()) return "today";
-  return raceDate < today ? "completed" : "upcoming";
-}
-
-function formatDateRange(dateStr: string): string {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const raceDay = new Date(y, m - 1, d);
-  const fri = new Date(raceDay);
-  fri.setDate(fri.getDate() - 2);
-  
-  const dayFri = fri.getDate().toString().padStart(2, "0");
-  const daySun = raceDay.getDate().toString().padStart(2, "0");
-  const month = MONTHS[raceDay.getMonth()].toUpperCase();
-  
-  return `${dayFri} - ${daySun} ${month}`;
-}
-
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function getCircuitPath(circuitId: string): string {
-  const key = circuitId.toLowerCase().replace(/[^a-z0-9]/g, "_");
-  return CIRCUIT_SVGS[key] || CIRCUIT_SVGS.default;
-}
 
 const DRIVER_HEADSHOTS: Record<string, string> = {
   VER: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png",
@@ -119,44 +75,73 @@ const DRIVER_HEADSHOTS: Record<string, string> = {
   COL: "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/F/FRACOL01_Franco_Colapinto/fracol01.png",
 };
 
+function getFlag(country: string) {
+  return COUNTRY_FLAGS[country] ?? "🏁";
+}
+
+function getTeamColor(id: string) {
+  const key = id.toLowerCase().replace(/[^a-z0-9]/g, "_");
+  return TEAM_COLORS[key] ?? "#666";
+}
+
+function driverCode(f: PodiumFinisher) {
+  return f.driver.code ?? `${f.driver.firstName[0]}${f.driver.lastName.slice(0, 2)}`.toUpperCase();
+}
+
+function getRaceStatus(dateStr: string): "upcoming" | "completed" | "today" {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const raceDate = new Date(y, m - 1, d);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  raceDate.setHours(0, 0, 0, 0);
+  if (raceDate.getTime() === today.getTime()) return "today";
+  return raceDate < today ? "completed" : "upcoming";
+}
+
+function formatDateRange(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const raceDay = new Date(y, m - 1, d);
+  const fri = new Date(raceDay);
+  fri.setDate(fri.getDate() - 2);
+  const dayFri = fri.getDate().toString().padStart(2, "0");
+  const daySun = raceDay.getDate().toString().padStart(2, "0");
+  const month = MONTHS[raceDay.getMonth()].toUpperCase();
+  return `${dayFri}-${daySun} ${month}`;
+}
+
+function getCircuitPath(circuitId: string): string {
+  const key = circuitId.toLowerCase().replace(/[^a-z0-9]/g, "_");
+  return CIRCUIT_SVGS[key] || CIRCUIT_SVGS.default;
+}
+
 function getHeadshotUrl(driverCode: string): string {
   return DRIVER_HEADSHOTS[driverCode.toUpperCase()] || 
     "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/driver_fallback_image.png";
 }
 
-const POSITION_COLORS = ["#FFD700", "#C0C0C0", "#CD7F32"];
-
-function PodiumDriver({ 
-  finisher, 
-  position 
-}: { 
-  finisher: PodiumFinisher; 
-  position: number;
-}) {
+function PodiumDriver({ finisher, position }: { finisher: PodiumFinisher; position: number }) {
   const teamColor = getTeamColor(finisher.constructor.id);
   const code = driverCode(finisher);
   const headshotUrl = getHeadshotUrl(code);
   
   return (
-    <div className="flex items-center gap-2.5 bg-[#0c0c12] px-2 py-1.5 min-w-0">
-      {/* Team color bar - the signature F1 timing element */}
+    <div className="flex items-center gap-2.5 px-2.5 py-2 transition-colors duration-150 hover:bg-white/[0.03]">
+      {/* Team color bar */}
       <div 
-        className="w-[3px] h-7 rounded-[1px] shrink-0"
+        className="w-[3px] h-6 rounded-sm shrink-0"
         style={{ backgroundColor: teamColor }}
       />
       
       {/* Position */}
       <span 
         className="text-sm font-black w-4 text-right tabular-nums shrink-0"
-        style={{ color: position === 1 ? "#fff" : "rgba(255,255,255,0.6)" }}
+        style={{ color: position === 1 ? "#fff" : "rgba(255,255,255,0.5)" }}
       >
         {position}
       </span>
       
       {/* Driver headshot */}
-      <div 
-        className="relative w-6 h-6 rounded-full overflow-hidden shrink-0"
-      >
+      <div className="relative w-6 h-6 rounded-full overflow-hidden shrink-0 bg-white/[0.05]">
         <Image
           src={headshotUrl}
           alt={code}
@@ -174,7 +159,7 @@ function PodiumDriver({
         >
           {code}
         </span>
-        <span className="text-[10px] font-mono text-white/35 tabular-nums truncate">
+        <span className="text-[10px] font-mono text-white/30 tabular-nums truncate">
           {position === 1 ? (finisher.time ?? "") : finisher.time ? `+${finisher.time}` : ""}
         </span>
       </div>
@@ -188,7 +173,7 @@ function CircuitSilhouette({ circuitId }: { circuitId: string }) {
   return (
     <svg 
       viewBox="0 0 100 100" 
-      className="w-full h-full opacity-15"
+      className="w-full h-full opacity-10 transition-opacity duration-300 group-hover:opacity-20"
       preserveAspectRatio="xMidYMid meet"
     >
       <path
@@ -214,16 +199,17 @@ export default function RaceCard({ race, podium, season }: Props) {
   return (
     <Link 
       href={`/race/${season}/${race.round}`}
-      className={`block relative bg-[#0f0f14] rounded-lg overflow-hidden border transition-all duration-200 cursor-pointer hover:bg-[#121218] hover:border-white/10 ${isLive ? "border-[#e10600]/40" : "border-white/[0.04]"}`}
+      className={`group block relative bg-[#0a0a0a] rounded-xl overflow-hidden border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer hover:bg-[#111] hover:border-white/[0.1] hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 active:scale-[0.98] ${isLive ? "border-[#e10600]/50 live-border" : "border-white/[0.06]"}`}
     >
+      {/* Live indicator bar */}
       {isLive && (
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#e10600]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#e10600] shadow-lg shadow-[#e10600]/30" />
       )}
 
       <div className="p-4">
         {/* Header row */}
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-semibold tracking-widest text-white/25 uppercase">
+          <span className="text-label">
             R{race.round.toString().padStart(2, "0")}
           </span>
           <div className="flex items-center gap-2">
@@ -240,7 +226,7 @@ export default function RaceCard({ race, podium, season }: Props) {
         </div>
 
         {/* Country + flag */}
-        <div className="flex items-center gap-2.5 mb-0.5">
+        <div className="flex items-center gap-2.5 mb-1">
           <span className="text-xl leading-none">{flag}</span>
           <h3 className="text-base font-black text-white tracking-tight leading-tight">
             {race.circuit.country === "UK" ? "Great Britain" : race.circuit.country}
@@ -248,13 +234,13 @@ export default function RaceCard({ race, podium, season }: Props) {
         </div>
 
         {/* Circuit name */}
-        <p className="text-[10px] text-white/30 uppercase tracking-wide leading-tight mb-4 line-clamp-1 pl-8">
+        <p className="text-[10px] text-white/25 uppercase tracking-wide leading-tight mb-4 line-clamp-1 pl-8">
           {race.circuit.name}
         </p>
 
         {/* Podium results or circuit silhouette */}
         {hasPodium ? (
-          <div className="rounded overflow-hidden border border-white/[0.04]">
+          <div className="rounded-lg overflow-hidden border border-white/[0.06] bg-black/30">
             {podium!.slice(0, 3).map((finisher) => (
               <PodiumDriver 
                 key={finisher.position} 
@@ -268,7 +254,7 @@ export default function RaceCard({ race, podium, season }: Props) {
             <CircuitSilhouette circuitId={race.circuit.id} />
             <div className="absolute inset-0 flex items-center justify-center">
               {isUpcoming && (
-                <span className="text-sm font-mono font-medium text-white/15 tabular-nums">
+                <span className="text-xs font-mono font-medium text-white/20 tabular-nums tracking-wide">
                   {formatDateRange(race.date)}
                 </span>
               )}

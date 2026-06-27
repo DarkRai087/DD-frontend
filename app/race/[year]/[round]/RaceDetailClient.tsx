@@ -209,36 +209,36 @@ export default function RaceDetailClient({ details }: Props) {
   ];
 
   return (
-    <div className="px-5 py-6">
+    <div className="px-5 py-6 animate-fade-in">
       {/* Back link */}
       <Link 
         href={`/?year=${details.season}`}
-        className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 text-sm mb-4 transition-colors"
+        className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors duration-200 text-sm mb-5 group"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Back to calendar
       </Link>
 
       {/* Header */}
-      <div className="flex items-start gap-4 mb-6">
-        <div className="text-3xl">{flag}</div>
+      <div className="flex items-start gap-4 mb-6 animate-slide-up">
+        <div className="text-4xl">{flag}</div>
         <div className="flex-1">
-          <h1 className="text-xl font-black tracking-tight uppercase">
+          <h1 className="text-2xl text-heading text-white">
             {details.circuit.country === "UK" ? "Great Britain" : details.circuit.country}
           </h1>
-          <p className="text-white/30 text-xs mt-0.5">{details.circuit.name}</p>
+          <p className="text-white/30 text-xs mt-1">{details.circuit.name}</p>
           {details.isSprintWeekend && (
-            <span className="inline-flex items-center gap-1.5 mt-2 text-[9px] font-bold uppercase tracking-widest text-[#e10600]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#e10600]" />
+            <span className="inline-flex items-center gap-1.5 mt-2.5 text-[9px] font-bold uppercase tracking-widest text-[#e10600]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e10600] live-indicator" />
               Sprint weekend
             </span>
           )}
         </div>
         <div className="text-right">
-          <p className="text-[10px] text-white/25 uppercase tracking-widest font-semibold">R{details.round.toString().padStart(2, "0")}</p>
-          <p className="text-xs text-white/50 font-mono tabular-nums mt-0.5">{formatDate(details.date)}</p>
+          <p className="text-label">R{details.round.toString().padStart(2, "0")}</p>
+          <p className="text-xs text-white/50 font-mono tabular-nums mt-1">{formatDate(details.date)}</p>
         </div>
       </div>
 
@@ -248,11 +248,7 @@ export default function RaceDetailClient({ details }: Props) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={
-              activeTab === tab.id
-                ? "px-4 py-2 text-xs font-bold uppercase tracking-wider rounded transition-all bg-[#e10600] text-white"
-                : "px-4 py-2 text-xs font-bold uppercase tracking-wider rounded transition-all text-white/35 hover:text-white/60 hover:bg-white/[0.03]"
-            }
+            className={`btn-toggle ${activeTab === tab.id ? "active" : ""}`}
           >
             {tab.label}
           </button>
@@ -261,18 +257,14 @@ export default function RaceDetailClient({ details }: Props) {
 
       {/* Results Tab */}
       {activeTab === "results" && (
-        <div className="bg-[#0f0f14] rounded-lg border border-white/[0.04] overflow-hidden">
+        <div className="bg-[#0a0a0a] rounded-xl border border-white/[0.06] overflow-hidden tab-content">
           {/* Session selector */}
-          <div className="flex gap-1.5 p-3 border-b border-white/[0.04] overflow-x-auto bg-[#0c0c10]">
+          <div className="flex gap-1.5 p-3 border-b border-white/[0.06] overflow-x-auto bg-black/30">
             {availableSessions.map((code) => (
               <button
                 key={code}
                 onClick={() => setSession(code)}
-                className={
-                  session === code
-                    ? "px-3 py-1.5 text-xs font-bold rounded transition-all bg-white/10 text-white shrink-0 uppercase tracking-wide"
-                    : "px-3 py-1.5 text-xs font-bold rounded transition-all text-white/30 hover:text-white/50 hover:bg-white/[0.03] shrink-0 uppercase tracking-wide"
-                }
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 uppercase tracking-wide transition-all duration-200 ${session === code ? "bg-white/10 text-white" : "text-white/30 hover:text-white/50 hover:bg-white/[0.04]"}`}
               >
                 {SESSION_LABELS[code] ?? code}
               </button>
@@ -286,12 +278,12 @@ export default function RaceDetailClient({ details }: Props) {
 
       {/* Info Tab */}
       {activeTab === "info" && (
-        <div className="bg-[#0f0f14] rounded-lg border border-white/[0.04] p-6">
+        <div className="bg-[#0a0a0a] rounded-xl border border-white/[0.06] p-6 tab-content">
           <div className="flex items-start gap-8 flex-wrap lg:flex-nowrap">
             {/* Circuit map */}
             <div className="flex-1 min-w-[280px]">
               <h2 className="text-sm font-bold uppercase tracking-wide text-white/80 mb-4">{details.circuit.name}</h2>
-              <div className="relative bg-[#0c0c10] rounded-lg p-6 border border-white/[0.04]">
+              <div className="relative bg-black/30 rounded-lg p-6 border border-white/[0.06]">
                 <svg 
                   viewBox="0 0 100 100" 
                   className="w-full max-w-sm mx-auto h-44"
@@ -299,7 +291,7 @@ export default function RaceDetailClient({ details }: Props) {
                 >
                   <path
                     d={getCircuitPath(details.circuit.id)}
-                    fill="rgba(255, 255, 255, 0.03)"
+                    fill="rgba(255, 255, 255, 0.02)"
                     stroke="url(#trackGradient)"
                     strokeWidth="2"
                     strokeLinecap="round"

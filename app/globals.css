@@ -1,12 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #08080c;
-  --surface: #0f0f14;
-  --surface-raised: #15151c;
+  --background: #000000;
+  --surface: #0a0a0a;
+  --surface-raised: #111111;
+  --surface-hover: #161616;
   --foreground: #ffffff;
-  --muted: rgba(255, 255, 255, 0.4);
+  --muted: rgba(255, 255, 255, 0.5);
+  --subtle: rgba(255, 255, 255, 0.25);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
   --f1-red: #e10600;
+  --f1-red-glow: rgba(225, 6, 0, 0.15);
 }
 
 @theme inline {
@@ -16,102 +21,369 @@
   --font-mono: var(--font-geist-mono);
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Timing tower row treatment - the signature F1 element */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMOOTH ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Page fade-in */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-fast {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 30ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 90ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 210ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(10) { animation-delay: 270ms; }
+.stagger-children > *:nth-child(n+11) { animation-delay: 300ms; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARD SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.card-flat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.card-flat:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   F1 TIMING TOWER AESTHETIC
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .timing-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 1rem;
+  padding: 0.625rem 0.75rem;
   background: var(--surface);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  transition: background 150ms ease;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
 }
 
 .timing-row:hover {
   background: var(--surface-raised);
 }
 
+.timing-row:last-child {
+  border-bottom: none;
+}
+
 .timing-row .team-bar {
   width: 3px;
-  height: 2rem;
-  border-radius: 1px;
+  height: 1.75rem;
+  border-radius: 2px;
   flex-shrink: 0;
 }
 
 .timing-row .position {
   font-size: 0.875rem;
   font-weight: 800;
-  width: 1.5rem;
+  width: 1.25rem;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 .timing-row .driver-code {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .timing-row .gap {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-variant-numeric: tabular-nums;
+  color: var(--subtle);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUTTON SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--f1-red);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #ff1a0d;
+  box-shadow: 0 4px 20px var(--f1-red-glow);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--surface);
+  color: var(--foreground);
+  border-color: var(--border-hover);
+}
+
+.btn-toggle {
+  background: var(--surface);
+  color: var(--subtle);
+  border: 1px solid var(--border);
+}
+
+.btn-toggle:hover {
   color: var(--muted);
 }
 
-/* Condensed heading style - evokes F1 broadcast typography */
-.heading-condensed {
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
+.btn-toggle.active {
+  background: var(--f1-red);
+  color: white;
+  border-color: var(--f1-red);
 }
 
-/* Subtle pit garage ambient texture */
-.surface-textured {
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARBON FIBER TEXTURE (Signature Element)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.carbon-texture {
+  position: relative;
+}
+
+.carbon-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background-image: 
-    linear-gradient(var(--surface) 1px, transparent 1px),
-    linear-gradient(90deg, var(--surface) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-position: -1px -1px;
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 1px,
+      rgba(255, 255, 255, 0.01) 1px,
+      rgba(255, 255, 255, 0.01) 2px
+    );
+  background-size: 4px 4px;
+  pointer-events: none;
+  border-radius: inherit;
 }
 
-/* Live pulse with F1 red */
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIVE INDICATOR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @keyframes live-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--f1-red-glow); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 4px transparent; }
 }
 
 .live-indicator {
   animation: live-pulse 1.5s ease-in-out infinite;
 }
 
-/* Selection highlight in team color */
+@keyframes live-border {
+  0%, 100% { border-color: var(--f1-red); }
+  50% { border-color: rgba(225, 6, 0, 0.4); }
+}
+
+.live-border {
+  animation: live-border 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLOW EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.glow-red {
+  box-shadow: 0 0 20px var(--f1-red-glow), 0 0 40px rgba(225, 6, 0, 0.08);
+}
+
+.glow-subtle {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-display {
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.text-heading {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.text-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.text-mono {
+  font-family: var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SELECTION & SCROLLBAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 ::selection {
   background: var(--f1-red);
   color: white;
 }
 
-/* Scrollbar styling for the pit wall monitor feel */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKELETON LOADING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 0%,
+    var(--surface-raised) 50%,
+    var(--surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TAB TRANSITIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.tab-content {
+  animation: fade-in-fast 0.2s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

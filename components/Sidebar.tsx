@@ -53,48 +53,44 @@ export default function Sidebar({ open, onClose, onMouseLeave }: Props) {
 
   return (
     <>
-      {/* Backdrop — tap outside on mobile to close */}
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-20 lg:hidden transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={onClose}
+      />
 
       <aside
-        className={[
-          "fixed top-0 left-0 h-full w-60 z-30 flex flex-col",
-          "bg-[#0c0c12] border-r border-white/[0.04]",
-          "transition-transform duration-250 ease-in-out",
-          open ? "translate-x-0 shadow-2xl shadow-black/80" : "-translate-x-full",
-        ].join(" ")}
+        className={`fixed top-0 left-0 h-full w-64 z-30 flex flex-col bg-[#0a0a0a] border-r border-white/[0.06] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "translate-x-0 shadow-2xl shadow-black/80" : "-translate-x-full"}`}
         onMouseLeave={onMouseLeave}
       >
         {/* Brand */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-[#e10600] flex items-center justify-center font-black text-sm text-white shrink-0">
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.06] shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-[#e10600] flex items-center justify-center font-black text-sm text-white shrink-0 shadow-lg shadow-[#e10600]/20">
             F1
           </div>
-          <span className="font-bold text-white tracking-tight whitespace-nowrap">
-            F1 Dashboard
-          </span>
+          <div className="min-w-0">
+            <span className="font-bold text-white tracking-tight whitespace-nowrap block">
+              F1 Dashboard
+            </span>
+            <span className="text-[10px] text-white/30 font-mono">
+              Live Data
+            </span>
+          </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          <p className="text-white/20 text-[10px] uppercase tracking-widest px-2 mb-3 font-mono">
-            Menu
+        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
+          <p className="text-label px-3 mb-3">
+            Navigation
           </p>
           {navLinks.map((link) => {
             const active = pathname === link.href;
-            const linkClass = [
-              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap",
-              active
-                ? "bg-[#e10600]/15 text-[#e10600]"
-                : "text-white/50 hover:text-white hover:bg-white/5",
-            ].join(" ");
             return (
-              <Link key={link.href} href={link.href} className={linkClass}>
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap active:scale-[0.98] ${active ? "bg-[#e10600] text-white shadow-lg shadow-[#e10600]/20" : "text-white/50 hover:text-white hover:bg-white/[0.06]"}`}
+              >
                 {link.icon}
                 {link.label}
               </Link>
@@ -103,9 +99,9 @@ export default function Sidebar({ open, onClose, onMouseLeave }: Props) {
         </nav>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-white/5 shrink-0">
-          <p className="text-white/20 text-[10px] font-mono whitespace-nowrap">
-            Powered by OpenF1 &amp; Ergast
+        <div className="px-5 py-4 border-t border-white/[0.06] shrink-0">
+          <p className="text-[10px] text-white/25 font-mono whitespace-nowrap">
+            Powered by OpenF1 & Ergast
           </p>
         </div>
       </aside>
